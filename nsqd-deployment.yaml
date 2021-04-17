@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsqd-deployment
+  labels:
+    app: nsqd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nsqd
+  template:
+    metadata:
+      labels:
+        app: nsqd
+    spec:
+      volumes:
+        - name: storage
+          emptyDir: {}
+      containers:
+      - name: nsqd
+        image: nsqio/nsq:latest
+        command: ['nsqd', '-data-path=/tmp' ,'-lookupd-tcp-address=nsqlookupd-service.default.svc.cluster.local:4160', '-broadcast-address=nsqlookupd-service.default.svc.cluster.local'] #-broadcast-address=nsqlookupd-service.default.svc.cluster.local:4160']
+        #command: ['nsqd', '-data-path=/tmp' ,'-lookupd-tcp-address=nsqd-service.default.svc.cluster.local:4160', '-broadcast-address=$(HOSTNAME).nsqd']
+      #  env:
+      #  - name: HOSTNAME
+      #    valueFrom:
+      #      fieldRef:
+      #        fieldPath: metadata.name
+        ports:
+        - name: tcp
+          containerPort: 4150
+          protocol: TCP
+        - name: http
+          containerPort: 4151
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /tmp
+          name: storage

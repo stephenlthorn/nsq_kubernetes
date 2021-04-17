@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsqlookupd-deployment
+  labels:
+    app: nsqlookupd
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nsqlookupd
+  template:
+    metadata:
+      labels:
+        app: nsqlookupd
+    spec:
+      containers:
+      - name: nsqlookupd
+        image: nsqio/nsq:latest
+        command: ['nsqlookupd']
+        ports:
+        - name: tcp
+          containerPort: 4160
+          protocol: TCP
+        - name: http
+          containerPort: 4161
+          protocol: TCP
+
+        readinessProbe:
+            tcpSocket:
+              port: 4161
+            initialDelaySeconds: 5
+            periodSeconds: 10
+        livenessProbe:
+            tcpSocket:
+              port: 4161
+            initialDelaySeconds: 15
+            periodSeconds: 20

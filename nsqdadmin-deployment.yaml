@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsqdadmin-deployment
+  labels:
+    app: nsqdadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nsqdadmin
+  template:
+    metadata:
+      labels:
+        app: nsqdadmin
+    spec:
+      containers:
+      - name: nsqd
+        image: nsqio/nsq:latest
+        command: ['nsqadmin', '-lookupd-http-address=nsqlookupd-service.default.svc.cluster.local:4161']
+        ports:
+        - name: tcp
+          containerPort: 4150
+          protocol: TCP
+        - name: http2
+          containerPort: 4161
+          protocol: TCP
+        - name: http
+          containerPort: 4171
+          protocol: TCP
+
+        readinessProbe:
+            tcpSocket:
+              port: 4171
+            initialDelaySeconds: 5
+            periodSeconds: 10
+        livenessProbe:
+            tcpSocket:
+              port: 4171
+            initialDelaySeconds: 15
+            periodSeconds: 20

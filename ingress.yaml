@@ -1,0 +1,15 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: nsq-ingress
+spec:
+  rules:
+    - host:
+      http:
+        paths:
+        - backend:
+            serviceName: nsqdadmin-service
+            servicePort: 4171
+        #- backend:
+        #   serviceName: nsqd-service
+        #   servicePort: 4151
