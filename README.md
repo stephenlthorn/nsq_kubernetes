@@ -19,6 +19,6 @@ curl -d 'hello world 1' 'nsqd-service.default.svc.cluster.local:4151/pub?topic=t
 
 Check the NSQ Admin page for results
 ```
-kubectl get svc,ingress
+kubectl get ingress
 ```
 Enter *ingress_address* into internet browser
